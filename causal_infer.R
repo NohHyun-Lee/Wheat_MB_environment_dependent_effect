@@ -36,82 +36,12 @@ if(max(df_for_CI_selected$incidence) > 1.1){
 df_for_CI_selected$temp_flower_sampling_10days
 df_scaled <- df_for_CI_selected
 df_scaled$temp_flower_sampling_10days
-# vars_for_scale <- c(
-#   "temp_before_hd_sampling_10days",
-#   "rhum_before_hd_sampling_10days",
-#   "GZ_mean_max",
-#   "temp_flower_sampling_10days",
-#   "rhum_flower_sampling_10days" ,
-#   "prcp_after_sampling"
-# )
 
-vars_for_scale <- c(
-  # "temp_before_hd_sampling_10days",
-  # "rhum_before_hd_sampling_10days",
-  # "temp_flower_sampling_10days",
-  # "rhum_flower_sampling_10days" ,
-  # "prcp_after_sampling",
-  "GZ_mean_max"
-)
 df_scaled[vars_for_scale] <- scale(df_scaled[vars_for_scale])
 df_scaled$temp_flower_sampling_10days
-# quantile(df_scaled[["Epicoccum"]],0.1)
-# quantile(df_scaled[["Epicoccum"]],0.9)
-# 
-# quantile(df_scaled[["Alternaria"]],0.1)
-# quantile(df_scaled[["Alternaria"]],0.9)
-# 
-# quantile(df_scaled[["Periconia"]],0.1)
-# quantile(df_scaled[["Periconia"]],0.9)
-# 
-# quantile(df_scaled[["Hannaella"]],0.1)
-# quantile(df_scaled[["Hannaella"]],0.9)
-# 
-# hist(df_scaled[["Alternaria"]])
-# hist(df_scaled[["Epicoccum"]])
-# hist(df_scaled[["Hannaella"]])
-# hist(df_scaled[["Periconia"]])
-
-### modelinglibrary(brms)
-# detach("package:conflicted", unload = TRUE)
-# prior <- prior(horseshoe(), class = "b")
-
-### overlap
-df_for_CI_selected2 <- df_for_CI_selected
-quantile(df_for_CI_selected2$Alternaria, 0.2);quantile(df_for_CI_selected2$Alternaria, 0.8)
-plot(df_for_CI_selected2$Alternaria, df_for_CI_selected2$temp_before_hd_sampling_10days)
-plot(df_for_CI_selected2$Alternaria, df_for_CI_selected2$rhum_before_hd_sampling_10days)
-
-quantile(df_for_CI_selected2$Epicoccum, 0.2);quantile(df_for_CI_selected2$Epicoccum, 0.8)
-plot(df_for_CI_selected2$Epicoccum, df_for_CI_selected2$temp_before_hd_sampling_10days)
-plot(df_for_CI_selected2$Epicoccum, df_for_CI_selected2$rhum_before_hd_sampling_10days)
-
-quantile(df_for_CI_selected2$Periconia, 0.2);quantile(df_for_CI_selected2$Periconia, 0.8)
-plot(df_for_CI_selected2$Periconia, df_for_CI_selected2$temp_before_hd_sampling_10days)
-plot(df_for_CI_selected2$Periconia, df_for_CI_selected2$rhum_before_hd_sampling_10days)
-
-quantile(df_for_CI_selected2$Hannaella, 0.2);quantile(df_for_CI_selected2$Hannaella, 0.8)
-plot(df_for_CI_selected2$Hannaella, df_for_CI_selected2$temp_before_hd_sampling_10days)
-plot(df_for_CI_selected2$Hannaella, df_for_CI_selected2$rhum_before_hd_sampling_10days)
-
-df_for_CI_selected2$A_group <- ifelse(df_for_CI_selected2$Hannaella < mean(df_for_CI_selected2$Hannaella), "low","high")
-ggplot(df_for_CI_selected2, aes(x=temp_before_hd_sampling_10days, fill=A_group)) +
-  geom_density(alpha=0.4)
-ggplot(df_for_CI_selected2, aes(x=rhum_before_hd_sampling_10days, fill=A_group)) +
-  geom_density(alpha=0.4)
-
-library("tableone")
-
-CreateTableOne(vars=c("temp_before_hd_sampling_10days",
-                      "rhum_before_hd_sampling_10days"),
-               strata="A_group",
-               data=df_for_CI_selected2,
-               test=FALSE)
 
 # for loop -----------------------------------------------------------------------------------------------------
 library(brms)
-print("1st")
-# 분석할 미생물 변수들
 microbes <- c("Alternaria", "Epicoccum", "Hannaella", "Periconia", "Cladosporium", "Papiliotrema")
 network_microbes <- c("Alternaria", "Epicoccum", "Hannaella", "Periconia", "Cladosporium", "Papiliotrema")#MB_max_filtered_microbes
 #######====================================================================================================================================================
@@ -142,133 +72,11 @@ for(ITE_save_version in c(ITE_save_version)){
     microbe <- microbes[mi]
     print(microbe)
     # # 모델 정의
-    # # formula_str <- as.formula(
-    # #   paste0("incidence ~ ",
-    # #          
-    # #          "s(",microbe,", k=3) +",
-    # #          
-    # #          "s(GZ_mean_max, k=3) +",
-    # # 
-    # #          "s(temp_flower_sampling_10days, k=3) +
-    # #           
-    # #           s(rhum_flower_sampling_10days, k=3)")
-    # # )
-    # 
-    # if(microbe == "Alternaria"){
-    #   formula_str <- as.formula(
-    #     paste0("incidence ~ ", 
-    #            "s(",microbe,", k=3) +",
-    #            " + 
-    #           t2(Alternaria,Papiliotrema, k=4) + 
-    #           t2(Alternaria,Periconia, k=4) + 
-    #           s(GZ_mean_max, k=3) +
-    #           s(temp_flower_sampling_10days, k=3) +
-    #           
-    #           s(rhum_flower_sampling_10days, k=3)")
-    #   )
-    # }else if(microbe == "Epicoccum"){
-    #   formula_str <- as.formula(
-    #     paste0("incidence ~ ",
-    #            "s(",microbe,", k=3) +",
-    #            " + 
-    #           t2(Epicoccum, Cladosporium, k=4) + 
-    #           s(GZ_mean_max, k=3) +
-    #           s(temp_flower_sampling_10days, k=3) +
-    #           
-    #           s(rhum_flower_sampling_10days, k=3)")
-    #   )
-    # }else if(microbe == "Periconia"){
-    #   formula_str <- as.formula(
-    #     paste0("incidence ~ ",
-    #            "s(",microbe,", k=3) +",
-    #            " + 
-    #           t2(Periconia, Alternaria, k=4) + 
-    #           s(GZ_mean_max, k=3) +
-    #           s(temp_flower_sampling_10days, k=3) +
-    #           
-    #           s(rhum_flower_sampling_10days, k=3)")
-    #   )
-    # }else{
-    #   formula_str <- as.formula(
-    #     paste0("incidence ~ ",
-    #            
-    #            "s(",microbe,", k=3) +",
-    #            
-    #            "s(GZ_mean_max, k=3) +",
-    #            
-    #            "s(temp_flower_sampling_10days, k=3) +
-    #           
-    #           s(rhum_flower_sampling_10days, k=3)")
-    #   )
-    #   
-    # }
-    # 
-    # 
-    # 
-    # 
-    # model <- brm(
-    #   formula = formula_str,
-    #   family = Beta(),
-    #   data = df_scaled,
-    #   prior = c(
-    #     prior(normal(0,1), class="b"),
-    #     prior(exponential(1), class="sds")
-    #   ),
-    #   chains = 4,
-    #   iter = 6000,
-    #   warmup = 3000,
-    #   cores = 4,
-    #   control = list(adapt_delta=0.995, max_treedepth=15),
-    #   silent = 2
-    # )
     ### make model ---------------------------------------------------------------------------------------------------------------------------
     ## select X variable -------------------------------------------------------
     base_terms <- paste0(
       "s(", microbe, ", k=3)"
     )
-    
-    ## correlation --------------------------------------------------------------
-    # cor_wth_with_inc
-    # imsi_M_cor <- correlation_df %>% dplyr::filter(inc_or_M == microbe) %>% dplyr::filter(p_val < 0.05)
-    # cor_wth_with_imsi_M <- imsi_M_cor$wth
-    # confonding_factor_candidate <- cor_wth_with_imsi_M[cor_wth_with_imsi_M %in% cor_wth_with_inc]
-    # 
-    # if(length(confonding_factor_candidate) == 0){
-    #   cor_terms <- ""
-    # }else{
-    #   imsi_M_cor_candidate <- imsi_M_cor[which(imsi_M_cor$wth %in% confonding_factor_candidate),]
-    #   
-    #   # temp
-    #   if(length(grep("temp", imsi_M_cor_candidate$wth)) > 0){
-    #     imsi_temp_can <- imsi_M_cor_candidate[grep("temp", imsi_M_cor_candidate$wth),]
-    #     imsi_temp_confounder <- imsi_temp_can$wth[which(abs(imsi_temp_can$rho) == max(abs(imsi_temp_can$rho)))]
-    #     imsi_temp_confounder_formula <- paste0("s(", imsi_temp_confounder, ", k=3)", " + ")
-    #   }else{
-    #     imsi_temp_confounder_formula <- ""
-    #   }
-    #   
-    #   #rhum
-    #   if(length(grep("rhum", imsi_M_cor_candidate$wth)) > 0){
-    #     imsi_rhum_can <- imsi_M_cor_candidate[grep("rhum", imsi_M_cor_candidate$wth),]
-    #     imsi_rhum_confounder <- imsi_rhum_can$wth[which(abs(imsi_rhum_can$rho) == max(abs(imsi_rhum_can$rho)))]
-    #     imsi_rhum_confounder_formula <- paste0("s(", imsi_rhum_confounder, ", k=3)", " + ")
-    #   }else{
-    #     imsi_rhum_confounder_formula <- ""
-    #   }
-    #   
-    #   #prcp
-    #   if(length(grep("prcp", imsi_M_cor_candidate$wth)) > 0){
-    #     imsi_prcp_can <- imsi_M_cor_candidate[grep("prcp", imsi_M_cor_candidate$wth),]
-    #     imsi_prcp_confounder <- imsi_prcp_can$wth[which(abs(imsi_prcp_can$rho) == max(abs(imsi_prcp_can$rho)))]
-    #     imsi_prcp_confounder_formula <- paste0("s(", imsi_prcp_confounder, ", k=3)", " + ")
-    #   }else{
-    #     imsi_prcp_confounder_formula <- ""
-    #   }
-    #   
-    #   cor_terms <- paste0(imsi_temp_confounder_formula, imsi_rhum_confounder_formula, imsi_prcp_confounder_formula)
-    #   
-    # }
-    # cor_terms <- sub("\\+\\s*$", "", cor_terms)
     cor_terms <- "s(temp_flower_sampling_10days, k=3) + s(rhum_flower_sampling_10days, k=3)"
     
     
@@ -356,14 +164,7 @@ for(ITE_save_version in c(ITE_save_version)){
     
     print(paste0(microbe, " ITE finished"))
     
-    # # ATE 계산
-    # ATE <- colMeans(pred_high - pred_low)
-    # 
-    # ATE_results <- cbind(ATE_results, ATE)
-    # names(ATE_results)[mi] <- paste0(microbe, "_ATE")
-    # 
-    # print(paste0(microbe, " ATE finished"))
-    
+      
     
     ### CATE -----------------------------------------------------------------------
     # 데이터 복제
@@ -452,14 +253,6 @@ for(ITE_save_version in c(ITE_save_version)){
     CITE_high_draw_mean <- colMeans(CATE_high_draws)
     CITE_low_draw_mean <- colMeans(CATE_low_draws)
     ##### Microbe × Weather surface #####
-    # temp
-    # version 5.0
-    # microbe_seq <- seq(min(df_scaled[[microbe]]),
-    #                    max(df_scaled[[microbe]]),
-    #                    length=5)
-    # temp_seq <- seq(min(df_scaled$temp_flower_sampling_10days),
-    #                 max(df_scaled$temp_flower_sampling_10days),
-    #                 length=5)
     microbe_seq <- as.vector(c(quantile(df_scaled[[microbe]], 0.1, na.rm = TRUE), quantile(df_scaled[[microbe]], 0.9, na.rm = TRUE)))
     
     CATE_temp_draws_mean <- data.frame(matrix(nrow = 12000, ncol = 0))
@@ -1337,13 +1130,6 @@ scatter_function_col_blue <- function(Data, X_var, Y_var, Point_color, Title, X_
     )
 }
 
-# df_analysis$Alt_ITE <- df_analysis$Alt_ITE*100
-# df_analysis$Epi_ITE <- df_analysis$Epi_ITE*100
-# df_analysis$Han_ITE <- df_analysis$Han_ITE*100
-# df_analysis$Per_ITE <- df_analysis$Per_ITE*100
-# df_analysis$Pap_ITE <- df_analysis$Pap_ITE*100
-# df_analysis$Cla_ITE <- df_analysis$Cla_ITE*100
-
 Temp_Alt_inc_g <- scatter_function_col_red(Data = df_analysis, X_var = temp_flower_sampling_10days, Y_var = Alt_ITE, Point_color = incidence,
                                Title = "Temp : Alternaria", X_name = "Temp_flower", Y_name = "Alternaria ITE")
 Temp_Epi_inc_g <- scatter_function_col_red(Data = df_analysis, X_var = temp_flower_sampling_10days, Y_var = Epi_ITE, Point_color = incidence,
@@ -1589,227 +1375,6 @@ pairs(
 
 plot(results[["Hannaella"]]$CITE_rhum_draws_mean$rhum_60, results[["Hannaella"]]$CITE_rhum_draws_mean$rhum_80)
 plot(results[["Periconia"]]$CITE_rhum_draws_mean$rhum_60, results[["Periconia"]]$CITE_rhum_draws_mean$rhum_80)
-# plot(df_analysis$rhum_flower_sampling_10days, df_analysis$Epicoccum)
-# plot(df_analysis$rhum_flower_sampling_10days, df_analysis$Hannaella)
-# 
-# table(cut(
-#   df_analysis$rhum_flower_sampling_10days,
-#   breaks = seq(50, 85, 5)
-# ))
-# ggplot(
-#   df_analysis,
-#   aes(x = rhum_flower_sampling_10days)
-# ) +
-#   geom_histogram(binwidth = 1)
-# rhum_temp_col_year_g <- scatter_function_col_M(Data = df_analysis, X_var = rhum_flower_sampling_10days, Y_var = temp_flower_sampling_10days, Point_color = year,
-#                                                Title = "Papiliotrema", X_name = "Rhum_flower", Y_name = "Temp_flower", Point_color_name = "Pap_ITE")
-# 
-# 
-# summary(lm(incidence ~ Cladosporium, data = df_scaled))
-# summary(lm(incidence ~ Cladosporium + temp_flower_sampling_10days, data = df_scaled))
-# summary(lm(incidence ~ Cladosporium + temp_flower_sampling_10days + rhum_flower_sampling_10days, data = df_scaled))
-# summary(lm(incidence ~ Cladosporium + Alternaria + temp_flower_sampling_10days + rhum_flower_sampling_10days + Cladosporium*Alternaria, data = df_scaled))
-# 
-# cor.test(df_analysis$temp_flower_sampling_10days, df_analysis$rhum_flower_sampling_10days)
-# Temp_Cla_col_Epi_g <- scatter_function_col_rhum(Data = df_analysis, X_var = Epicoccum, Y_var = Cla_ITE, Point_color = year,
-#                                                  Title = "Temp : Cladosporium", X_name = "Epicoccum", Y_name = "Cladosporium ITE")
-# Temp_Pap_col_Alt_g <- scatter_function_col_rhum(Data = df_analysis, X_var = Alternaria, Y_var = Pap_ITE, Point_color = year,
-#                                                  Title = "Temp : Papiliotrema", X_name = "Alternaria", Y_name = "Papiliotrema ITE")
-# 
-# plot(df_analysis$Cladosporium, df_analysis$incidence)
-# plot(df_analysis$Papiliotrema, df_analysis$incidence)
-# plot(df_analysis$temp_flower_sampling_10days, df_analysis$incidence)
-# 
-# 
-# 
-# cor.test(df_analysis$Papiliotrema, df_analysis$incidence)
-# plot(df_analysis$temp_flower_sampling_10days, df_analysis$Alt_ITE)
-# plot(df_analysis$temp_flower_sampling_10days, df_analysis$Epi_ITE)
-# plot(df_analysis$temp_flower_sampling_10days, df_analysis$Han_ITE)
-# plot(df_analysis$temp_flower_sampling_10days, df_analysis$Per_ITE)
-# plot(df_analysis$temp_flower_sampling_10days, df_analysis$Cla_ITE)
-# plot(df_analysis$temp_flower_sampling_10days, df_analysis$Pap_ITE)
-# plot(df_analysis$temp_flower_sampling_10days, df_analysis$incidence)
-# 
-# plot(df_analysis$rhum_flower_sampling_10days, df_analysis$Alt_ITE)
-# plot(df_analysis$rhum_flower_sampling_10days, df_analysis$Epi_ITE)
-# plot(df_analysis$rhum_flower_sampling_10days, df_analysis$Han_ITE)
-# plot(df_analysis$rhum_flower_sampling_10days, df_analysis$Per_ITE)
-# plot(df_analysis$rhum_flower_sampling_10days, df_analysis$Cla_ITE)
-# plot(df_analysis$rhum_flower_sampling_10days, df_analysis$Pap_ITE)
-# plot(df_analysis$rhum_flower_sampling_10days, df_analysis$incidence)
-# 
-# plot(df_analysis$Alternaria, df_analysis$Alt_ITE)
-# plot(df_analysis$Epicoccum, df_analysis$Epi_ITE)
-# plot(df_analysis$Hannaella, df_analysis$Han_ITE)
-# plot(df_analysis$Periconia, df_analysis$Per_ITE)
-# plot(df_analysis$Cladosporium, df_analysis$Cla_ITE)
-# plot(df_analysis$Papiliotrema, df_analysis$Pap_ITE)
-# 
-# plot(df_analysis$incidence, df_analysis$Alt_ITE)
-# plot(df_analysis$incidence, df_analysis$Epi_ITE)
-# plot(df_analysis$incidence, df_analysis$Han_ITE)
-# plot(df_analysis$incidence, df_analysis$Per_ITE)
-# plot(df_analysis$incidence, df_analysis$Cla_ITE)
-# plot(df_analysis$incidence, df_analysis$Pap_ITE)
-# 
-# rhum_75_df <- df_for_more_analysis %>% filter(rhum_flower_sampling_10days > 75)
-# 
-# table(rhum_75_df$year)
-# table(df_for_more_analysis$year)
-# 
-# rhum_75_df$Periconia
-# 
-# # df_analysis$temp_before_hd_sampling_10days <- df_for_more_analysis$temp_before_hd_sampling_10days
-# # df_analysis$temp_hd_sampling_10days <- df_for_more_analysis$temp_hd_sampling_10days
-# # df_analysis$rhum_before_hd_sampling_10days <- df_for_more_analysis$rhum_before_hd_sampling_10days
-# # df_analysis$rhum_hd_sampling_10days <- df_for_more_analysis$rhum_hd_sampling_10days
-# # 
-# # library(randomForest)
-# # rf_alternaria <- randomForest(
-# #   Alternaria ~ temp_before_hd_sampling_10days +
-# #     temp_hd_sampling_10days +
-# #     rhum_before_hd_sampling_10days +
-# #     rhum_hd_sampling_10days,
-# #   data = df_analysis,
-# #   ntree = 500,
-# #   # mtry = 100,
-# #   importance = TRUE
-# # )
-# # importance(rf_alternaria)
-# # varImpPlot(
-# #   rf_alternaria,
-# #   type = 1,
-# #   main = "Random Forest Variable Importance"
-# # )
-# # 
-# # 
-# # rf_epicoccum <- randomForest(
-# #   Epicoccum ~ temp_before_hd_sampling_10days +
-# #     temp_hd_sampling_10days +
-# #     rhum_before_hd_sampling_10days +
-# #     rhum_hd_sampling_10days,
-# #   data = df_analysis,
-# #   ntree = 500,
-# #   # mtry = 100,
-# #   importance = TRUE
-# # )
-# # importance(rf_epicoccum)
-# # varImpPlot(
-# #   rf_epicoccum,
-# #   type = 1,
-# #   main = "Random Forest Variable Importance"
-# # )
-# 
-# 
-# # print(rf_alternaria)
-# # 
-# # plot(df_analysis$temp_before_hd_sampling_10days, df_analysis$Alternaria)
-# # plot(df_analysis$temp_before_hd_sampling_10days, df_analysis$Epicoccum)
-# 
-# 
-# ##
-# # ATE_plot_df <- data.frame()
-# # for(microbe in microbes){
-# #   ATE <- results[[microbe]]$ITE_draw_mean
-# #   CATE_high <- results[[microbe]]$CATE_high_draw
-# #   CATE_low  <- results[[microbe]]$CATE_low_draw
-# #   
-# #   tmp <- data.frame(
-# #     microbe = microbe,
-# #     effect_type = c("ATE","CATE_high","CATE_low"),
-# #     mean = c(mean(ATE),
-# #              mean(CATE_high),
-# #              mean(CATE_low)),
-# #     lower = c(quantile(ATE,0.025),
-# #               quantile(CATE_high,0.025),
-# #               quantile(CATE_low,0.025)),
-# #     upper = c(quantile(ATE,0.975),
-# #               quantile(CATE_high,0.975),
-# #               quantile(CATE_low,0.975))
-# #   )
-# #   
-# #   ATE_plot_df <- rbind(ATE_plot_df,tmp)
-# # }
-# # ATE_plot_df <- data.frame()
-# # for(microbe in microbes){
-# #   ATE <- results[[microbe]]$ITE_draw_mean
-# #   # CATE_high <- results[[microbe]]$CATE_high_draw
-# #   # CATE_low  <- results[[microbe]]$CATE_low_draw
-# #   
-# #   tmp <- data.frame(
-# #     microbe = microbe,
-# #     effect_type = c("ATE"), #,"CATE_high","CATE_low"
-# #     mean = c(mean(ATE)#,
-# #              # mean(CATE_high),
-# #              # mean(CATE_low)
-# #     ),
-# #     lower = c(quantile(ATE,0.025)#,
-# #               # quantile(CATE_high,0.025),
-# #               # quantile(CATE_low,0.025)
-# #     ),
-# #     upper = c(quantile(ATE,0.975)#,
-# #               # quantile(CATE_high,0.975),
-# #               # quantile(CATE_low,0.975)
-# #     )
-# #   )
-# #   
-# #   ATE_plot_df <- rbind(ATE_plot_df,tmp)
-# # }
-# # ATE_plot_df$mean <- ATE_plot_df$mean*100
-# # ATE_plot_df$lower <- ATE_plot_df$lower*100
-# # ATE_plot_df$upper <- ATE_plot_df$upper*100
-# # ATE_plot_df$color_flag <- ifelse(ATE_plot_df$upper > 0, "pos", "default")
-# # ATE_posterior_g <- ggplot(ATE_plot_df,
-# #                           aes(x = mean,
-# #                               y = microbe,
-# #                               color = color_flag)) +
-# #   
-# #   geom_vline(xintercept = 0,
-# #              linetype = "dashed",
-# #              color = "grey40") +
-# #   
-# #   geom_errorbarh(aes(xmin = lower,
-# #                      xmax = upper),
-# #                  height = 0.2,
-# #                  size = 1.2) +
-# #   
-# #   geom_point(size = 4, shape = "x") +
-# #   
-# #   scale_color_manual(values = c(
-# #     default = "#004C99",
-# #     pos = "grey60"
-# #   )) +
-# #   
-# #   labs(
-# #     x = "\nEffect on FHB incidence (%)",
-# #     y = "",
-# #     color = ""
-# #   ) +
-# #   
-# #   theme_bw(base_size = 15) + 
-# #   theme(
-# #     axis.title.x = element_text(size = 15, face = 'bold'),
-# #     axis.title.y = element_text(size = 15, face = 'bold'),
-# #     axis.text.x = element_text(size = 15, face = 'bold', color = 'black'),
-# #     axis.text.y = element_text(size = 15, face = 'bold', color = 'black')
-# #   )
-# # ggsave(
-# #   plot = ATE_posterior_g,
-# #   file = paste0(
-# #     "./Output/3. obs_pred_graph/2025/",
-# #     version_pred_obs,
-# #     "/causal_inference/ITE_ATE_CATE/",
-# #     ITE_save_version, "/graph/",
-# #     "ATE_posterior_",
-# #     ITE_save_version2,
-# #     ".png"
-# #   ),
-# #   width = 15,
-# #   height = 10,
-# #   units = c("cm")
-# # )
-
 
 ### Supplementary figure ---------------------------------------------------------------------------------------------------------
 plot(df_for_more_analysis$rhum_flower_sampling_10days, df_for_more_analysis$incidence)
