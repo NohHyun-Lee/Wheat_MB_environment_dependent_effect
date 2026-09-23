@@ -1,8 +1,3 @@
-#version
-# v5.0 : CITE 
-# v5.1 : wth = temp, rhum, prcp / interaction = Y
-# v5.2 : wth = temp, rhum / interaction = Y
-# v5.3 : wth = temp, rhum / interaction = microbes + Papiliotrema + Cladosporium
 ### library
 library(readxl)
 library(brms)
@@ -116,7 +111,7 @@ CreateTableOne(vars=c("temp_before_hd_sampling_10days",
 # for loop -----------------------------------------------------------------------------------------------------
 library(brms)
 print("1st")
-# ºĞ¼®ÇÒ ¹Ì»ı¹° º¯¼öµé
+# ë¶„ì„í•  ë¯¸ìƒë¬¼ ë³€ìˆ˜ë“¤
 microbes <- c("Alternaria", "Epicoccum", "Hannaella", "Periconia", "Cladosporium", "Papiliotrema")
 network_microbes <- c("Alternaria", "Epicoccum", "Hannaella", "Periconia", "Cladosporium", "Papiliotrema")#MB_max_filtered_microbes
 #######====================================================================================================================================================
@@ -146,7 +141,7 @@ for(ITE_save_version in c(ITE_save_version)){
     #mi=1
     microbe <- microbes[mi]
     print(microbe)
-    # # ¸ğµ¨ Á¤ÀÇ
+    # # ëª¨ë¸ ì •ì˜
     # # formula_str <- as.formula(
     # #   paste0("incidence ~ ",
     # #          
@@ -361,7 +356,7 @@ for(ITE_save_version in c(ITE_save_version)){
     
     print(paste0(microbe, " ITE finished"))
     
-    # # ATE °è»ê
+    # # ATE ê³„ì‚°
     # ATE <- colMeans(pred_high - pred_low)
     # 
     # ATE_results <- cbind(ATE_results, ATE)
@@ -371,14 +366,14 @@ for(ITE_save_version in c(ITE_save_version)){
     
     
     ### CATE -----------------------------------------------------------------------
-    # µ¥ÀÌÅÍ º¹Á¦
+    # ë°ì´í„° ë³µì œ
     new_cate_high_wth_T1 <- df_scaled
     new_cate_high_wth_T0 <- df_scaled
     
     new_cate_low_wth_T1  <- df_scaled
     new_cate_low_wth_T0  <- df_scaled
     
-    # ÇØ´ç ¹Ì»ı¹°ÀÇ 90% quantile vs 10% quantile
+    # í•´ë‹¹ ë¯¸ìƒë¬¼ì˜ 90% quantile vs 10% quantile
     new_cate_high_wth_T1[[microbe]] <- quantile(df_scaled[[microbe]], 0.9, na.rm = TRUE)
     new_cate_high_wth_T0[[microbe]]  <- quantile(df_scaled[[microbe]], 0.1, na.rm = TRUE)
     
@@ -403,7 +398,7 @@ for(ITE_save_version in c(ITE_save_version)){
     new_cate_low_wth_T1$prcp_after_sampling <- new_cate_low_wth_T0$prcp_after_sampling <- 
       quantile(df_scaled$prcp_after_sampling, low_weather_quantile)
     
-    ## ¿¹Ãø
+    ## ì˜ˆì¸¡
     # high pred
     pred_high_wth_T1 <- posterior_epred(model, newdata = new_cate_high_wth_T1)
     pred_high_wth_T0 <- posterior_epred(model, newdata = new_cate_high_wth_T0)
@@ -447,7 +442,7 @@ for(ITE_save_version in c(ITE_save_version)){
     CATE_low_results <- cbind(CATE_low_results, CATE_low)
     names(CATE_low_results)[mi] <- paste0(microbe, "_CATE_low")
     
-    ##### observation Æò±Õ ¡æ effect per draw #####
+    ##### observation í‰ê·  â†’ effect per draw #####
     
     ATE_draw_mean <- rowMeans(ATE_draws)
     CATE_high_draw_mean <- rowMeans(CATE_high_draws)
@@ -456,7 +451,7 @@ for(ITE_save_version in c(ITE_save_version)){
     ITE_draw_mean <- colMeans(ATE_draws)
     CITE_high_draw_mean <- colMeans(CATE_high_draws)
     CITE_low_draw_mean <- colMeans(CATE_low_draws)
-    ##### Microbe ¡¿ Weather surface #####
+    ##### Microbe Ã— Weather surface #####
     # temp
     # version 5.0
     # microbe_seq <- seq(min(df_scaled[[microbe]]),
@@ -583,7 +578,7 @@ for(ITE_save_version in c(ITE_save_version)){
     
     
     
-    # °á°ú ÀúÀå
+    # ê²°ê³¼ ì €ì¥
     results[[microbe]] <- list(
       
       model=model,
@@ -1288,7 +1283,7 @@ scatter_function_col_red <- function(Data, X_var, Y_var, Point_color, Title, X_n
     ) +
     labs(
       title = Title, 
-      x = "Temp flower (¡É)" ,#paste0(X_name), 
+      x = "Temp flower (â„ƒ)" ,#paste0(X_name), 
       y = paste0(Y_name)
     ) +
     theme_classic() + 
@@ -1338,7 +1333,7 @@ scatter_function_col_blue <- function(Data, X_var, Y_var, Point_color, Title, X_
       axis.text.y = element_text(
         size = 15, face = "bold", color = "black"
       ),
-      plot.margin = ggplot2::margin(15, 15, 15, 15) # »ó, ¿ì, ÇÏ, ÁÂ ¿©¹é Ãß°¡ (´ÜÀ§: pt)
+      plot.margin = ggplot2::margin(15, 15, 15, 15) # ìƒ, ìš°, í•˜, ì¢Œ ì—¬ë°± ì¶”ê°€ (ë‹¨ìœ„: pt)
     )
 }
 
@@ -1833,7 +1828,7 @@ temp_vs_inc_g <-  ggplot(df_for_more_analysis, aes(x = temp_flower_sampling_10da
   ) +
   labs(
     title = "spearman = 0.74 / p < 0.001", 
-    x = "\nTemp flower (¡É)" ,#paste0(X_name), 
+    x = "\nTemp flower (â„ƒ)" ,#paste0(X_name), 
     y = "FHB incidence (%)\n"
   ) +
   theme_classic() + 
@@ -1883,7 +1878,7 @@ temp_hist_g <-  ggplot(df_for_more_analysis, aes(x = temp_flower_sampling_10days
   geom_histogram(bins = 10, fill = "#DA3B3B", color = "white") +
   labs(
     title = "", 
-    x = "\nTemp flower (¡É)" ,
+    x = "\nTemp flower (â„ƒ)" ,
     y = "Count\n" 
   ) +
   theme_classic() + 
