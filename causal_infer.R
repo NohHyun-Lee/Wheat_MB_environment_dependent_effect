@@ -5,9 +5,6 @@ library(ggplot2)
 library(dplyr)
 ### data
 df_for_more_analysis <- read_xlsx("D:/Microbiome/000.codes/FHB_microbiome_code/FHB_analysis/2025/MB_code_2025/Output/3. obs_pred_graph/2025/2025_v12/df_for_more_analysis_good_20_bad_100.xlsx")
-correlation_df <-read_xlsx(paste0("D:/Microbiome/000.codes/FHB_causal_infer_Korea/output/", 
-                                  "v1.1", "/correlation_plot/correlation_plot_", 
-                                  "v1.1",  "(wth_cor_res_df2).xlsx")) 
 network_res <- read_xlsx("D:/Microbiome/000.codes/FHB_causal_infer_Korea/output/v1.1/network/network_edges_genus_high_abudance_v1.1.xlsx")
 MB_max_filtered_data <- read_xlsx(path = "D:/Microbiome/000.data/FHB_microbiome_data/FHB_intensity_and_wth_data/For_phyloseq/2025/Filtered_genus_ITSfull_v4.1.xlsx")
 
